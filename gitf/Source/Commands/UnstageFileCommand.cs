@@ -32,6 +32,16 @@ internal class UnstageFileCommand : Command
 		return true;
 	}
 
+	public override string GetDescription()
+	{
+		return "Unstages one or multiple files from a commit.";
+	}
+
+	public override string GetUsage()
+	{
+		return "gitf unstage <commit_name> [<file1> <file2> <...>]";
+	}
+
 	public override bool Execute(CommandData data, ReadOnlySpan<string> args, ref List<string> messages)
 	{
 		var fileArgs = args.Length > 1 ? args.Slice(1) : ReadOnlySpan<string>.Empty;

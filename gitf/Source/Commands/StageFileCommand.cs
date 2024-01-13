@@ -32,6 +32,16 @@ internal class StageFileCommand : Command
 		return true;
 	}
 
+	public override string GetDescription()
+	{
+		return "Stages one or multiple files into a commit.";
+	}
+
+	public override string GetUsage()
+	{
+		return "gitf stage <commit_name> [<file1> <file2> <...>]";
+	}
+
 	public override bool Execute(CommandData data, ReadOnlySpan<string> args, ref List<string> messages)
 	{
 		var fileArgs = args.Length > 1 ? args.Slice(1) : ReadOnlySpan<string>.Empty;

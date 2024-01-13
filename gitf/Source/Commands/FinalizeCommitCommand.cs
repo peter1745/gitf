@@ -28,6 +28,16 @@ internal class FinalizeCommitCommand : Command
 		return true;
 	}
 
+	public override string GetDescription()
+	{
+		return "Finalizes a commit and generates a git commit.";
+	}
+	
+	public override string GetUsage()
+	{
+		return "gitf commit <commit_name> [git_commit_args]";
+	}
+
 	public override bool Execute(CommandData data, ReadOnlySpan<string> args, ref List<string> messages)
 	{
 		// Figure out which branch is currently checked out (we'll switch back to this branch after committing)

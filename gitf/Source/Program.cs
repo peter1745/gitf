@@ -151,7 +151,34 @@ public class Program
 
 	private void PrintHelpInfo()
 	{
+		Console.WriteLine("Usage: gitf <action> [<options>]");
+		Console.WriteLine();
 
+		Console.WriteLine("ACTIONS");
+
+		const int NameAlignmentFromStart = 4;
+		const int UsageAlignmentFromStart = NameAlignmentFromStart + 2;
+		
+		foreach (var command in m_Commands.Values)
+		{
+			var commandName = command.GetName();
+			
+			for (int i = 0; i < NameAlignmentFromStart; i++)
+				Console.Write(" ");
+			
+			Console.WriteLine($"{commandName}:");
+
+			for (int i = 0; i < UsageAlignmentFromStart; i++)
+				Console.Write(" ");
+			
+			Console.WriteLine($"{command.GetDescription()}");
+
+			for (int i = 0; i < UsageAlignmentFromStart; i++)
+				Console.Write(" ");
+			
+			Console.WriteLine($"Usage: {command.GetUsage()}");
+			Console.WriteLine();
+		}
 	}
 
 	public static void Main(string[] args)

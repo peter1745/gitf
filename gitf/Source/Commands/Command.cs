@@ -36,6 +36,8 @@ namespace gitf.Commands
 		}
 
 		public abstract string GetName();
+		public abstract string GetDescription();
+		public abstract string GetUsage();
 		public abstract bool Execute(CommandData data, ReadOnlySpan<string> args, ref List<string> messages);
 	}
 }

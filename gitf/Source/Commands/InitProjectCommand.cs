@@ -23,6 +23,16 @@ internal class InitProjectCommand : Command
 		return true;
 	}
 
+	public override string GetDescription()
+	{
+		return "Initializes a new gitf project in the current folder.";
+	}
+    
+	public override string GetUsage()
+	{
+		return "gitf init";
+	}
+
 	public override bool Execute(CommandData data, ReadOnlySpan<string> args, ref List<string> messages)
 	{
 		string projectName = args.IsEmpty ? Path.GetFileName(data.ProjectDirectory) : args[0];

@@ -32,6 +32,15 @@ internal class DeleteCommitCommand : Command
 		return true;
 	}
 
+	public override string GetDescription()
+	{
+		return "Deletes a commit permanently.";
+	}
+	
+	public override string GetUsage()
+	{
+		return "gitf delete <commit_name>";
+	}
 
 	public override bool Execute(CommandData data, ReadOnlySpan<string> args, ref List<string> messages)
 	{

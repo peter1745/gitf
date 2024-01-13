@@ -34,6 +34,16 @@ internal class CreateCommitCommand : Command
 		
 		return true;
 	}
+	
+	public override string GetDescription()
+	{
+		return "Creates a new commit.";
+	}
+
+	public override string GetUsage()
+	{
+		return "gitf create <commit_name> [<file1> <file2> <...>]";
+	}
 
 	public override bool Execute(CommandData data, ReadOnlySpan<string> args, ref List<string> messages)
 	{
