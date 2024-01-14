@@ -73,5 +73,30 @@ public static class CommandUtils
 
 		return output;
 	}
+
+	private static List<string> s_BinaryFileTypes =
+	[
+		".exe",
+		".dll",
+		".lib",
+		".obj",
+		".pdb",
+		".ifc",
+		".ddi",
+		".ilk",
+		".exp",
+		".embed",
+		".so",
+		".a",
+		".pch",
+		".ttf",
+		".ttc",
+		".bin"
+	];
+	
+	public static bool IsBinaryFile(string filepath)
+	{
+		return s_BinaryFileTypes.Contains(Path.GetExtension(filepath));
+	}
 	
 }

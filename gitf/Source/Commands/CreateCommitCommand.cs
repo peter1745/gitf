@@ -59,7 +59,7 @@ internal class CreateCommitCommand : Command
 		int stagedFiles = 0;
 		foreach (var file in files)
 		{
-			if (data.Database.StageFile(commit, file, out var message))
+			if (data.Project.StageFile(commit, file, out var message))
 			{
 				stagedFiles++;
 			}

@@ -54,7 +54,7 @@ internal class DeleteCommitCommand : Command
 			
 			foreach (var file in files)
 			{
-				_ = data.Database.UnstageFile(data.Commit, file, out _);
+				_ = data.Project.UnstageFile(data.Commit, file, out _);
 			}
 
 			data.Project.Commits.Remove(data.Commit);

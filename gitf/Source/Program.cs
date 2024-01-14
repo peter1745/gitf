@@ -9,12 +9,12 @@ namespace gitf;
 
 public class Program
 {
-	private static readonly JsonSerializerOptions s_JsonOptions = new()
+	private static readonly JsonSerializerOptions s_DatabaseJsonOptions = new()
 	{
-		IncludeFields = true,
+		IncludeFields = true
 	};
 	
-	private readonly Dictionary<string, Command> m_Commands = [];
+	private readonly List<Command> m_Commands = [];
 
 	private CommitDB m_Database;
 	private CommitProject m_ActiveProject;
@@ -24,7 +24,7 @@ public class Program
 		RegisterCommands();
 		LoadDatabase();
 	}
-
+	
 	private void RegisterCommands()
 	{
 		try
@@ -46,7 +46,7 @@ public class Program
 					continue;
 				}
 				
-				m_Commands.Add(command.GetName(), command);
+				m_Commands.Add(command);
 			}
 		}
 		catch (Exception ex)
@@ -64,11 +64,11 @@ public class Program
 		}
 
 		m_Database = File.Exists(CommitDB.s_DatabasePath)
-			? JsonSerializer.Deserialize<CommitDB>(File.ReadAllText(CommitDB.s_DatabasePath), s_JsonOptions)
+			? JsonSerializer.Deserialize<CommitDB>(File.ReadAllText(CommitDB.s_DatabasePath), s_DatabaseJsonOptions)
 			: new CommitDB();
 
 		Debug.Assert(m_Database != null, "Failed to load or create CommitDB!");
-
+        
 		foreach (var project in m_Database.Projects)
 		{
 			if (project.FilePath == Environment.CurrentDirectory)
@@ -78,7 +78,7 @@ public class Program
 			}
 		}
 	}
-
+	
 	private void Execute(ReadOnlySpan<string> args)
 	{
 		if (args.IsEmpty || args[0] == "--help" || args[0] == "-h")
@@ -89,7 +89,18 @@ public class Program
 
 		string requestedCommand = args[0];
 
-		if (!m_Commands.TryGetValue(requestedCommand, out var command))
+		Command command = null;
+		
+		foreach (var cmd in m_Commands)
+		{
+			if (requestedCommand == cmd.GetName() || requestedCommand == cmd.GetShorthand())
+			{
+				command = cmd;
+				break;
+			}
+		}
+		
+		if (command == null)
 		{
 			Console.WriteLine($"gitf: '{requestedCommand}' is not a gitf command. See 'gitf --help' for more info.");
 			return;
@@ -100,14 +111,10 @@ public class Program
 		// Try to find a commit that has a name that matches commandArgs[0] (do this here because it's a common operation for a lot of commands)
 		CommitData activeCommit = null;
 		
-		if (m_ActiveProject != null)
+		if (m_ActiveProject != null && !commandArgs.IsEmpty)
 		{
-			Console.WriteLine("Found active project");
 			foreach (var commit in m_ActiveProject.Commits)
 			{
-				Console.WriteLine($"Commit: {commit}");
-				Console.WriteLine($"Arg0: {commandArgs[0]}");
-				
 				if (commit.Name == commandArgs[0])
 				{
 					activeCommit = commit;
@@ -140,7 +147,7 @@ public class Program
 		}
 		else
 		{
-			File.WriteAllText(CommitDB.s_DatabasePath, JsonSerializer.Serialize(m_Database, s_JsonOptions));
+			File.WriteAllText(CommitDB.s_DatabasePath, JsonSerializer.Serialize(m_Database, s_DatabaseJsonOptions));
 		}
 
 		foreach (var message in messages)
@@ -159,20 +166,30 @@ public class Program
 		const int NameAlignmentFromStart = 4;
 		const int UsageAlignmentFromStart = NameAlignmentFromStart + 2;
 		
-		foreach (var command in m_Commands.Values)
+		foreach (var command in m_Commands)
 		{
 			var commandName = command.GetName();
 			
 			for (int i = 0; i < NameAlignmentFromStart; i++)
 				Console.Write(" ");
+
+			var commandShorthand = command.GetShorthand();
 			
 			Console.WriteLine($"{commandName}:");
 
 			for (int i = 0; i < UsageAlignmentFromStart; i++)
 				Console.Write(" ");
-			
+
 			Console.WriteLine($"{command.GetDescription()}");
 
+			if (!string.IsNullOrEmpty(commandShorthand))
+			{
+				for (int i = 0; i < UsageAlignmentFromStart; i++)
+					Console.Write(" ");
+				
+				Console.WriteLine($"Alias: {commandShorthand}");
+			}
+			
 			for (int i = 0; i < UsageAlignmentFromStart; i++)
 				Console.Write(" ");
 			
@@ -183,19 +200,6 @@ public class Program
 
 	public static void Main(string[] args)
 	{
-		/*
-		
-		gitf create <name> <file1> <file2> ...
-		gitf stage <name> <file1> <file2> ...
-		gitf unstage <name> <file1> <file2> ...
-		gitf delete <name>
-		gitf commit <name> -m "Here's my message"
-
-		gitf checkpoint [--list | -l]
-		gitf restore [<amount>]
-
-		*/
-
 		new Program().Execute(args);
 	}
 }

@@ -51,7 +51,7 @@ internal class StageFileCommand : Command
 		
 		foreach (var file in files)
 		{
-			if (data.Database.StageFile(data.Commit, file, out var message))
+			if (data.Project.StageFile(data.Commit, file, out var message))
 			{
 				stagedFiles++;
 			}

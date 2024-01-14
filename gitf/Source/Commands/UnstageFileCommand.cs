@@ -51,7 +51,7 @@ internal class UnstageFileCommand : Command
 		
 		foreach (var file in files)
 		{
-			if (data.Database.UnstageFile(data.Commit, file, out var message))
+			if (data.Project.UnstageFile(data.Commit, file, out var message))
 			{
 				unstagedFiles++;
 			}
