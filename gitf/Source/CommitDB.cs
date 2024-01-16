@@ -8,7 +8,6 @@ namespace gitf;
 
 public class CommitData
 {
-	[JsonIgnore] public CommitProject Project;
 	public string Name;
 	
 	// NOTE(Peter): Don't make this readonly, it breaks the JSON deserializer
@@ -24,6 +23,8 @@ public class CommitProject
 	public List<CommitData> Commits = [];
 
 	public List<int> Checkpoints = [];
+
+	[JsonIgnore] public List<string> TrackedFiles = [];
 	
 	public string GetStoragePath(string filepath)
 	{
@@ -78,14 +79,14 @@ public class CommitProject
 		_ = Directory.CreateDirectory(destinationFolder);
 
 		File.Copy(file, destinationFile, true);
-
+		
 		// Check if this file is part of a checkpoint, and restore to the checkpoint if that's the case
 		if (Checkpoints.Count > 0)
 		{
 			List<string> messages = [];
 			RestoreToLastCheckpoint(ref messages);
 		}
-		else
+		else if (TrackedFiles.Contains(file))
 		{
 			_ = CommandUtils.RunCommand($"git restore {file}");
 		}

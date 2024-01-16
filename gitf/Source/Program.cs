@@ -77,6 +77,11 @@ public class Program
 				break;
 			}
 		}
+
+		if (m_ActiveProject != null)
+		{
+			m_ActiveProject.TrackedFiles = CommandUtils.GetTrackedFiles();
+		}
 	}
 	
 	private void Execute(ReadOnlySpan<string> args)
@@ -118,7 +123,6 @@ public class Program
 				if (commit.Name == commandArgs[0])
 				{
 					activeCommit = commit;
-					activeCommit.Project = m_ActiveProject;
 					break;
 				}
 			}

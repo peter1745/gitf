@@ -114,35 +114,19 @@ internal partial class CheckpointCommand : Command
 			return true;
 		}
 
-		var trackedFiles = CommandUtils.RunCommand("git ls-files -s");
-		var fileArray = trackedFiles.Split('\n');
-        
+		var trackedFiles = CommandUtils.GetTrackedFiles();
+
 		List<string> checkpointFiles = [];
-        
-		var regex = GitLsFilesRegex();
             	
-		foreach (var file in fileArray)
+		foreach (var file in trackedFiles)
 		{
-			if (string.IsNullOrEmpty(file) || string.IsNullOrWhiteSpace(file))
-			{
-				continue;
-			}
-                    
-			if (!regex.IsMatch(file))
-			{
-				messages.Add($"Failed to match {file} against regex!");
-				return false;
-			}
-        
-			var filepath = regex.Replace(file, "");
-        
 			// Ignore directories and binary files
-			if (Directory.Exists(filepath) || CommandUtils.IsBinaryFile(filepath))
+			if (Directory.Exists(file) || CommandUtils.IsBinaryFile(file))
 			{
 				continue;
 			}
-            		
-			checkpointFiles.Add(Path.GetFullPath(filepath));
+			
+			checkpointFiles.Add(Path.GetFullPath(file));
 		}
         
 		int checkpointID = data.Project.Checkpoints.Count;
@@ -183,7 +167,4 @@ internal partial class CheckpointCommand : Command
 		messages.Add($"Created checkpoint with {checkpointFiles.Count} files");
 		return true;
 	}
-
-    [GeneratedRegex(@"\d{6}\s[a-zA-Z0-9]{40}\s\d\s+")]
-    private static partial Regex GitLsFilesRegex();
 }

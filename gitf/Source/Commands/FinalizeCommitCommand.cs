@@ -100,8 +100,17 @@ internal class FinalizeCommitCommand : Command
 		// Merge the gitf branch into the current branch
 		_ = RunCommand($"git merge {tempBranch}");
 
+		// Delete the "feature" branch
 		_ = RunCommand($"git branch -d {tempBranch}");
 
+		// Delete the gitf commit and it's cached files
+		foreach (var file in data.Commit.Files)
+		{
+			File.Delete(data.Project.GetStoragePath(file));
+		}
+		
+		data.Project.Commits.Remove(data.Commit);
+		
 		return true;
 	}
 }

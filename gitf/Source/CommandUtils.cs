@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using Microsoft.TemplateEngine.Utils;
 
 namespace gitf;
 
-public static class CommandUtils
+public static partial class CommandUtils
 {
 	
 	public static List<string> ParseArgumentFilePaths(ReadOnlySpan<string> args)
@@ -98,5 +99,33 @@ public static class CommandUtils
 	{
 		return s_BinaryFileTypes.Contains(Path.GetExtension(filepath));
 	}
-	
+
+	public static List<string> GetTrackedFiles()
+	{
+		List<string> result = [];
+
+		var regex = GitLsFilesRegex();
+		
+		var trackedFiles = RunCommand("git ls-files -s");
+
+		foreach (var line in trackedFiles.Split('\n'))
+		{
+			if (string.IsNullOrEmpty(line) || string.IsNullOrWhiteSpace(line))
+			{
+				continue;
+			}
+			
+			if (!regex.IsMatch(line))
+			{
+				throw new Exception($"Failed to match {line} against regex!");
+			}
+
+			result.Add(regex.Replace(line, ""));
+		}
+
+		return result;
+	}
+
+    [GeneratedRegex(@"\d{6}\s[a-zA-Z0-9]{40}\s\d\s+")]
+    private static partial Regex GitLsFilesRegex();
 }

@@ -49,7 +49,6 @@ internal class CreateCommitCommand : Command
 	{
 		var commit = new CommitData()
 		{
-			Project = data.Project,
 			Name = args[0]
 		};
 
